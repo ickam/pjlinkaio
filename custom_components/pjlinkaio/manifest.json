@@ -1,0 +1,11 @@
+{
+  "domain": "pjlinkaio",
+  "name": "PJLink AIO",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://www.home-assistant.io/integrations/pjlink",
+  "iot_class": "local_polling",
+  "loggers": ["aiopjlink"],
+  "requirements": ["aiopjlink==1.0.5"],
+  "version": "1.0.0"
+}

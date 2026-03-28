@@ -1,0 +1,30 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to PJLink projector",
+        "description": "Set up a PJLink projector or display device.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "password": "Password",
+          "encoding": "Character encoding"
+        },
+        "data_description": {
+          "host": "Hostname or IP address of the projector.",
+          "port": "TCP port for PJLink communication (default: 4352).",
+          "password": "Password for PJLink authentication (leave blank if none).",
+          "encoding": "Character encoding for communication (default: utf-8)."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the projector. Please check the host and port.",
+      "invalid_auth": "Authentication failed. Please check your password.",
+      "unknown": "An unexpected error occurred."
+    },
+    "abort": {
+      "already_configured": "This projector is already configured."
+    }
+  }
+}
