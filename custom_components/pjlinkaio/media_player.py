@@ -70,17 +70,21 @@ class PJLinkMediaPlayer(PJLinkEntity, MediaPlayerEntity):
     """Representation of a PJLink projector as a media player."""
 
     _attr_name = None  # Use device name as entity name
-    _attr_supported_features = (
-        MediaPlayerEntityFeature.TURN_ON
-        | MediaPlayerEntityFeature.TURN_OFF
-        | MediaPlayerEntityFeature.VOLUME_MUTE
-        | MediaPlayerEntityFeature.SELECT_SOURCE
-    )
 
     def __init__(self, coordinator: PJLinkCoordinator) -> None:
         """Initialize the PJLink media player."""
         super().__init__(coordinator)
         self._attr_unique_id = f"{self._device_id}_media_player"
+
+    @property
+    def supported_features(self) -> MediaPlayerEntityFeature:
+        """Flag media player features that are supported."""
+        return (
+            MediaPlayerEntityFeature.TURN_ON
+            | MediaPlayerEntityFeature.TURN_OFF
+            | MediaPlayerEntityFeature.VOLUME_MUTE
+            | MediaPlayerEntityFeature.SELECT_SOURCE
+        )
 
     @property
     def state(self) -> MediaPlayerState:
@@ -138,21 +142,15 @@ class PJLinkMediaPlayer(PJLinkEntity, MediaPlayerEntity):
 
     async def async_turn_on(self) -> None:
         """Turn the projector on."""
-        await self.coordinator.async_send_command(
-            lambda link: link.power.turn_on()
-        )
+        await self.coordinator.async_send_command(lambda link: link.power.turn_on())
 
     async def async_turn_off(self) -> None:
         """Turn the projector off."""
-        await self.coordinator.async_send_command(
-            lambda link: link.power.turn_off()
-        )
+        await self.coordinator.async_send_command(lambda link: link.power.turn_off())
 
     async def async_mute_volume(self, mute: bool) -> None:
         """Mute or unmute audio."""
-        await self.coordinator.async_send_command(
-            lambda link: link.mute.audio(mute)
-        )
+        await self.coordinator.async_send_command(lambda link: link.mute.audio(mute))
 
     async def async_select_source(self, source: str) -> None:
         """Select an input source."""
