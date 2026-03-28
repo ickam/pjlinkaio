@@ -1,0 +1,239 @@
+## PJLink AIO Dashboard Sections
+## Paste these two sections into your dashboard raw config editor.
+## Entity IDs assume projector name "Optoma 1080p" → slug "optoma_1080p".
+
+      # ── Section 1: Optoma and Apple TV main remote (PJLink AIO) ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Optoma and Apple TV main remote (PJLink AIO)
+            heading_style: title
+          - type: tile
+            grid_options:
+              columns: 12
+              rows: 1
+            entity: media_player.pjlinkaio_optoma_1080p
+            icon: mdi:power
+            vertical: false
+            features_position: bottom
+            tap_action:
+              action: toggle
+          - type: custom:universal-remote-card
+            rows:
+              - - home
+                - menu
+              - - touchpad
+              - - discoveryplus
+                - primevideo
+                - infuse
+                - disney
+              - - netflix
+                - BBC
+                - itv
+                - Channel 4
+              - - play_pause
+                - skip_backward
+                - skip_forward
+            platform: Apple TV
+            custom_actions:
+              - type: button
+                name: infuse
+                icon: phu:infuse-pro
+                tap_action:
+                  action: call-service
+                  service: media_player.select_source
+                  target:
+                    entity_id: media_player.bedroom_atv
+                  data:
+                    source: Infuse
+              - type: button
+                name: BBC
+                icon: phu:bbc
+                tap_action:
+                  action: perform-action
+                  perform_action: media_player.select_source
+                  data:
+                    source: BBC iPlayer
+                  target:
+                    entity_id: media_player.bedroom_atv
+                service_data:
+                  target:
+                    entity_id: media_player.bedroom_atv
+                  data:
+                    source: BBC iPlayer
+              - type: button
+                name: itv
+                icon: phu:itvx
+                tap_action:
+                  action: perform-action
+                  perform_action: media_player.select_source
+                  target:
+                    entity_id: media_player.bedroom_atv
+                  data:
+                    source: ITVX
+                service_data:
+                  target:
+                    entity_id: media_player.bedroom_atv
+                  data:
+                    source: ITVX
+              - type: button
+                name: Channel 4
+                icon: phu:channel-4-uk
+                tap_action:
+                  action: perform-action
+                  perform_action: media_player.select_source
+                  data:
+                    source: Channel 4
+                  target:
+                    entity_id: media_player.bedroom_atv
+                service_data:
+                  entity_id: media_player.bedroom_atv
+                  source: Channel 4
+            remote_id: remote.bedroom_atv
+            media_player_id: media_player.bedroom_atv
+            grid_options:
+              columns: full
+              rows: 10
+
+      # ── Section 2: Volume & Status (PJLink AIO) ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Volume & Status (PJLink AIO)
+            heading_style: title
+
+          # ── HDMI source selector ──
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: button
+                name: HDMI 1
+                icon: mdi:video-input-hdmi
+                tap_action:
+                  action: call-service
+                  service: media_player.select_source
+                  target:
+                    entity_id: media_player.pjlinkaio_optoma_1080p
+                  data:
+                    source: "DIGITAL 1"
+              - type: button
+                name: HDMI 2
+                icon: mdi:video-input-hdmi
+                tap_action:
+                  action: call-service
+                  service: media_player.select_source
+                  target:
+                    entity_id: media_player.pjlinkaio_optoma_1080p
+                  data:
+                    source: "DIGITAL 2"
+
+          # ── Volume controls (existing telnet solution) ──
+          - type: entities
+            entities:
+              - entity: input_number.projector_volume
+                name: Projector Volume
+                icon: mdi:volume-high
+            state_color: false
+          - type: horizontal-stack
+            cards:
+              - type: entity
+                entity: input_number.projector_volume
+                name: Volume Level
+                icon: mdi:numeric
+          - type: grid
+            columns: 3
+            square: false
+            cards:
+              - type: button
+                name: Mute
+                icon: mdi:volume-mute
+                tap_action:
+                  action: call-service
+                  service: script.projector_mute_toggle
+              - type: button
+                name: Vol Down
+                icon: mdi:volume-minus
+                tap_action:
+                  action: call-service
+                  service: script.projector_volume_down
+              - type: button
+                name: Vol Up
+                icon: mdi:volume-plus
+                tap_action:
+                  action: call-service
+                  service: script.projector_volume_up
+
+          # ── Video mute & freeze (PJLink AIO) ──
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: button
+                name: Video Mute
+                icon: mdi:projector-off
+                entity: switch.pjlinkaio_optoma_1080p_video_mute
+                tap_action:
+                  action: toggle
+              - type: button
+                name: Freeze
+                icon: mdi:pause-box
+                entity: switch.pjlinkaio_optoma_1080p_freeze
+                tap_action:
+                  action: toggle
+
+          # ── Power state (PJLink AIO) ──
+          - type: vertical-stack
+            cards:
+              - type: entity
+                entity: sensor.pjlinkaio_optoma_1080p_power_state
+                name: Projector Power State
+                icon: mdi:power
+
+          # ── Lamp hours (PJLink AIO) ──
+          - type: vertical-stack
+            cards:
+              - type: entity
+                entity: sensor.pjlinkaio_optoma_1080p_lamp_1_hours
+                name: Projector Lamp Hours
+                icon: mdi:projector-tray
+              - type: gauge
+                entity: sensor.pjlinkaio_optoma_1080p_lamp_1_hours
+                min: 0
+                max: 7000
+                severity:
+                  green: 0
+                  yellow: 3850
+                  red: 6900
+
+          # ── Error status (PJLink AIO) ──
+          - type: entities
+            title: Projector Status
+            entities:
+              - entity: sensor.pjlinkaio_optoma_1080p_fan_status
+                name: Fan
+              - entity: sensor.pjlinkaio_optoma_1080p_lamp_status
+                name: Lamp
+              - entity: sensor.pjlinkaio_optoma_1080p_temperature_status
+                name: Temperature
+              - entity: sensor.pjlinkaio_optoma_1080p_cover_status
+                name: Cover
+              - entity: sensor.pjlinkaio_optoma_1080p_filter_status
+                name: Filter
+              - entity: sensor.pjlinkaio_optoma_1080p_other_status
+                name: Other
+
+          # ── Resolution info (Class 2) ──
+          - type: entities
+            title: Signal Info
+            entities:
+              - entity: sensor.pjlinkaio_optoma_1080p_input_resolution
+                name: Input Resolution
+              - entity: sensor.pjlinkaio_optoma_1080p_recommended_resolution
+                name: Recommended Resolution
+
+          # ── Filter hours (Class 2) ──
+          - type: entity
+            entity: sensor.pjlinkaio_optoma_1080p_filter_hours
+            name: Filter Hours
+            icon: mdi:air-filter

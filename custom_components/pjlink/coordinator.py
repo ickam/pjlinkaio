@@ -106,21 +106,37 @@ class PJLinkCoordinator(DataUpdateCoordinator[PJLinkState]):
                 info = await link.info.table()
 
                 self.device_info.projector_name = info.get("projector_name") or ""
-                self.device_info.manufacturer_name = (
-                    info.get("manufacturer_name") or ""
-                )
+                self.device_info.manufacturer_name = info.get("manufacturer_name") or ""
                 self.device_info.product_name = info.get("product_name") or ""
                 self.device_info.serial_number = info.get("serial_number") or ""
-                self.device_info.software_version = (
-                    info.get("software_version") or ""
-                )
+                self.device_info.software_version = info.get("software_version") or ""
 
                 # Determine PJLink class
-                try:
-                    pjclass = await link.info.pjlink_class()
-                    self.device_info.pjlink_class = pjclass.value
-                except PJLinkException:
-                    self.device_info.pjlink_class = "1"
+                # Try Class 1 command first; some projectors respond with
+                # a Class 2 protocol prefix which causes a parse error, so
+                # retry with Class 2 on failure.
+                pjclass_detected = False
+                for attempt_class in (PJLink.C1, PJLink.C2):
+                    try:
+                        pjclass = await link.info.pjlink_class(pjclass=attempt_class)
+                        self.device_info.pjlink_class = pjclass.value
+                        pjclass_detected = True
+                        break
+                    except PJLinkException:
+                        continue
+
+                if not pjclass_detected:
+                    # Check if info.table() captured the class
+                    table_class = info.get("pjlink_class")
+                    if table_class is not None:
+                        self.device_info.pjlink_class = table_class.value
+                    else:
+                        _LOGGER.warning(
+                            "Could not detect PJLink class for %s, "
+                            "defaulting to Class 1",
+                            self._host,
+                        )
+                        self.device_info.pjlink_class = "1"
 
                 # Fetch available input sources
                 try:
